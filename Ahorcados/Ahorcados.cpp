@@ -19,6 +19,7 @@ public:
 	void changeGoodLetters();
 	void gameLoop();
 	bool checkLetters(char);
+	bool checkEndgame();
 };
 
 bool Hangman::checkLetters(char _char) {
@@ -41,27 +42,31 @@ void Hangman::changeGoodLetters() {
 }
 
 void Hangman::printLives() {
-	cout << "Lives remaining: " << lives << endl;
+	cout << "Vidas: ";
+	for (int i = 0; i < lives; i++) {
+		cout << "0 ";
+	}
+	cout << endl;
 }
 
 void Hangman::guessWordTry() {
 	correctLetters.clear();
-	cout << "Enter a letter: ";
+	cout << "Ingrese una letra: ";
 	cin >> letterGuessed;
 	if (checkLetters(letterGuessed[0])) {
-		cout << "Already entered! 1 life less" << endl;
+		cout << "Ya pusiste esa letra! 1 vida menos" << endl;
 		lives--;
 	} else {
 		for (int i = 0; i < hangManWord.size(); i++){
 			if (letterGuessed[0] == hangManWord[i]) correctLetters.push_back(i);
 		}
 		if (correctLetters.size() > 0) {
-			cout << "Correct!\n";
+			cout << "Correcto!\n";
 			changeGoodLetters();
 		}
 		else {
 			lives--;
-			cout << "Bad try! Sorry" << endl;
+			cout << "Mal intento! Perdon" << endl;
 		}
 	}
 	
@@ -73,31 +78,34 @@ void Hangman::printWord() {
 	cout << endl;
 }
 
+bool Hangman::checkEndgame() {
+	for (auto it = secretWord.begin(); it != secretWord.end(); ++it) {
+		if (*it == '_') return true;
+	}
+	return false;
+}
+
 void Hangman::gameLoop() {
-	while (lives != 0) {
+	while (lives != 0 && checkEndgame()) {
 		guessWordTry();
 		printWord();
 	}
+	if (lives == 0) cout << "PERDISTE! :(";
+	else cout << "GANASTE!!";
+
 }
 
 int main(){
 	string secretWord;
-	cout << "Write a secretWord (and just one secretWord) and do not tell the other player: ";
+	cout << "Escribe una palabra secreta (y no le digas al otro jugador) de mas de 6 letras: ";
 	cin >> secretWord;
 	while (secretWord.size() < 6) {
 		system("cls");
-		cout << "Write a secretWord and do not tell the other player: "; 
+		cout << "Escribe una palabra secreta (y no le digas al otro jugador): "; 
 		cin >> secretWord;
 	}
-	
+	system("cls");
 	Hangman firstTry(secretWord);
 	firstTry.gameLoop();
 }
 
-/*cout << "    ______" << endl;
-	cout << "   |      |" << endl;
-	cout << "   |      0" << endl;
-	cout << "   |     /|\\" << endl;
-	cout << "   |      |" << endl;
-	cout << "   |     / \\" << endl;
-	cout << "___|___" << endl;*/
